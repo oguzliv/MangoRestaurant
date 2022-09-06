@@ -1,7 +1,7 @@
 using AutoMapper;
-using Mango.Services.ProductAPI;
-using Mango.Services.ProductAPI.DbContexts;
-using Mango.Services.ProductAPI.Repositories;
+using Mango.Services.ShoppingCartAPI;
+using Mango.Services.ShoppingCartAPI.DbContexts;
+using Mango.Services.ShoppingCartAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen(c =>
         Name = "Auth",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        BearerFormat =  "JWT",
+        BearerFormat = "JWT",
         Scheme = "Bearer"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement()
@@ -51,15 +51,15 @@ builder.Services.AddSwaggerGen(c =>
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
- {
-     options.Authority = "https://localhost:44363";
-     options.TokenValidationParameters = new TokenValidationParameters
-     {
-         ValidateAudience = false
- };
+{
+    options.Authority = "https://localhost:44363";
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false
+    };
 });
 builder.Services.AddAuthorization(options =>
 {
@@ -81,7 +81,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
