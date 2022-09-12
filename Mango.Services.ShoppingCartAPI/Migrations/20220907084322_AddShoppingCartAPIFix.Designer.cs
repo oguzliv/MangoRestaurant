@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Mango.Services.ShoppingCartAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220901124023_AddShoppingCartAPIFirstCommit")]
-    partial class AddShoppingCartAPIFirstCommit
+    [Migration("20220907084322_AddShoppingCartAPIFix")]
+    partial class AddShoppingCartAPIFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,11 +58,9 @@ namespace Mango.Services.ShoppingCartAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartHeaderId"));
 
                     b.Property<string>("CouponCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("CartHeaderId");
@@ -76,15 +74,12 @@ namespace Mango.Services.ShoppingCartAPI.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("CategoryName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")

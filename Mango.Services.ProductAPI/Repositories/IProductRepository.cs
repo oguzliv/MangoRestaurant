@@ -1,4 +1,6 @@
 ﻿using Mango.Services.ProductAPI.Models.Dto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Mango.Services.ProductAPI.Repositories
 {

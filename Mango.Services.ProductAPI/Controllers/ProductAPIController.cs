@@ -3,6 +3,8 @@ using Mango.Services.ProductAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace Mango.Services.ProductAPI.Controllers
 {

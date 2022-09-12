@@ -73,6 +73,7 @@ namespace Mango.Web.Controllers
             cartDto.CartDetails = cartDetailsList;
 
             var accessToken = await HttpContext.GetTokenAsync("access_token");
+            var x = JsonConvert.SerializeObject(cartDto);
             var addToCartResp = await _cartService.AddToCartAsync<ResponseDto>(cartDto,accessToken);
 
             if (addToCartResp != null && addToCartResp.IsSuccess)
@@ -95,7 +96,7 @@ namespace Mango.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Login()
         {
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            //var accessToken = await HttpContext.GetTokenAsync("access_token");
             return RedirectToAction(nameof(Index));
         }
         public IActionResult Logout()

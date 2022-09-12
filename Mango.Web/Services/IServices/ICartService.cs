@@ -1,4 +1,5 @@
-﻿using Mango.Web.Models;
+﻿using Mango.Services.ShoppingCartAPI.Messages;
+using Mango.Web.Models;
 
 namespace Mango.Web.Services.IServices
 {
@@ -8,6 +9,9 @@ namespace Mango.Web.Services.IServices
         Task<T> AddToCartAsync<T> (CartDto Cart, string token = null);
         Task<T> UpdateCartAsync<T> (CartDto Cart, string token = null);
         Task<T> RemoveFromCartAsync<T> (int cartId, string token = null);
+        Task<T> ApplyCoupon<T> (CartDto cart, string token = null);
+        Task<T> RemoveCoupon<T> (string userId, string token = null);
+        Task<T> Checkout<T>(CartHeaderDto cartHeader, string token = null);
 
     }
 }

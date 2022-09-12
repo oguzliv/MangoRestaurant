@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:18270",
+      "sslPort": 44325
+    }
+  },
+  "profiles": {
+    "Mango.Services.ProductAPI": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:49980;http://localhost:49981",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+/*
+
+
+  {
+  "profiles": {
+    "Mango.Services.CouponAPI": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:49980;http://localhost:49981"
+    },
+    "IISExpress": {
+      "commandName": "IIS",
+      "launchBrowser": true,
+      "launchUrl": "swagger"
+    }
+  }
+}
+
+*/

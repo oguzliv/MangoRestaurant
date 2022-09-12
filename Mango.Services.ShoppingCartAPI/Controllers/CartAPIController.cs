@@ -1,4 +1,6 @@
-﻿using Mango.Services.ShoppingCartAPI.Models.Dto;
+﻿using Mango.MessageBus;
+using Mango.Services.ShoppingCartAPI.Messages;
+using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Mango.Services.ShoppingCartAPI.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +9,16 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
 {
     [Route("api/cart")]
     [ApiController]
-    public class CartController : ControllerBase
+    public class CartAPIController : ControllerBase
     {
         private readonly ICartRepository _cartRepository;
+        private readonly IMessageBus _azureServiceBus;
         protected ResponseDto _response;
 
-        public CartController(ICartRepository cartRepository)
+        public CartAPIController(ICartRepository cartRepository, IMessageBus azureServiceBus)
         {
             _cartRepository = cartRepository;
+            _azureServiceBus = azureServiceBus;
             this._response = new ResponseDto();
         }
         [HttpGet("GetCart/{userId}")]
@@ -71,6 +75,29 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
             {
                 bool isSuccess= await _cartRepository.RemoveFromCart(cartId);
                 _response.Result = isSuccess ;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string>() { ex.ToString() };
+
+            }
+            return _response;
+        }
+        [HttpPost("Checkout")]
+        public async Task<object> Checkout(CheckoutHeaderDto checkoutHeader)
+        {
+            try
+            {
+                CartDto cartDto = await _cartRepository.GetCartByUserId(checkoutHeader.UserId);
+                if(cartDto == null)
+                {
+                    return BadRequest();
+                }
+                checkoutHeader.CartDetails = cartDto.CartDetails;
+                //logic for processing order
+                await _azureServiceBus.PublishMessage(checkoutHeader, "checkoutmessagetopic");
+                
             }
             catch (Exception ex)
             {
