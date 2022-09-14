@@ -1,6 +1,7 @@
 ﻿using Mango.MessageBus;
 using Mango.Services.ShoppingCartAPI.Messages;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
+using Mango.Services.ShoppingCartAPI.Models.Dtos;
 using Mango.Services.ShoppingCartAPI.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,14 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
     public class CartAPIController : ControllerBase
     {
         private readonly ICartRepository _cartRepository;
+        private readonly ICouponRepository _couponRepository;
         private readonly IMessageBus _azureServiceBus;
         protected ResponseDto _response;
 
-        public CartAPIController(ICartRepository cartRepository, IMessageBus azureServiceBus)
+        public CartAPIController(ICartRepository cartRepository, IMessageBus azureServiceBus, ICouponRepository couponRepository)
         {
             _cartRepository = cartRepository;
+            _couponRepository = couponRepository; 
             _azureServiceBus = azureServiceBus;
             this._response = new ResponseDto();
         }
@@ -127,6 +130,18 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
                     return BadRequest();
                 }
                 checkoutHeader.CartDetails = cartDto.CartDetails;
+
+                if (!string.IsNullOrEmpty(checkoutHeader.CouponCode))
+                {
+                    CouponDto coupon = await _couponRepository.GetCoupon(checkoutHeader.CouponCode);
+                    if(checkoutHeader.DiscountTotal != coupon.DiscountAmount)
+                    {
+                        _response.IsSuccess = false;
+                        _response.ErrorMessage = new List<string>() { "Coupon changed please confirm" };
+                        _response.DisplayMessage = "Coupon changed please confirm";
+                        return _response;
+                    }
+                }
                 //logic for processing order
                 await _azureServiceBus.PublishMessage(checkoutHeader, "checkoutmessagetopic");
                 
