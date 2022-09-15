@@ -1,4 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
+using Mango.MessageBus;
 using Mango.Services.OrderAPI.Messages;
 using Mango.Services.OrderAPI.Models;
 using Mango.Services.OrderAPI.Repository;
@@ -14,16 +15,20 @@ namespace Mango.Services.OrderAPI.Messagin
         private readonly string serviceBusConnectionString;
         private readonly string subscriptionName;
         private readonly string checkoutMessageTopic;
+        private readonly string orderPaymentProcessTopic;
+        private readonly IMessageBus _messageBus;
         private ServiceBusProcessor checkoutProcessor;
 
-        public AzureServiceBusConsumer(OrderRepository orderRepository, IConfiguration configuration)
+        public AzureServiceBusConsumer(OrderRepository orderRepository, IConfiguration configuration, IMessageBus messageBus)
         {
             _orderRepository = orderRepository;
             _configuration = configuration;
+            _messageBus = messageBus;   
 
             serviceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
             subscriptionName = configuration.GetValue<string>("SubscriptionName");
             checkoutMessageTopic = configuration.GetValue<string>("CheckoutMessageTopic");
+            orderPaymentProcessTopic = configuration.GetValue<string>("OrderPaymentProcseeTopic");
 
             var client = new ServiceBusClient(serviceBusConnectionString);
 
@@ -85,7 +90,25 @@ namespace Mango.Services.OrderAPI.Messagin
 
             }
             await _orderRepository.AddOrder(orderHeader);
+            PaymentRequestMessage paymentRequestMessage = new PaymentRequestMessage
+            {
+                Name = orderHeader.FirstName + " " + orderHeader.LastName,
+                CardNumber = orderHeader.CardNumber,
+                CVV = orderHeader.CVV,
+                ExpiryMonthYear = orderHeader.ExpiryMonthYear,
+                OrderId = orderHeader.OrderHeaderId,
+                OrderTotal = orderHeader.OrderTotal
+            };
 
+            try
+            {
+                await _messageBus.PublishMessage(paymentRequestMessage, orderPaymentProcessTopic);
+                await args.CompleteMessageAsync(args.Message);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }
