@@ -143,7 +143,8 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
                     }
                 }
                 //logic for processing order
-                await _azureServiceBus.PublishMessage(checkoutHeader, "checkoutmessagetopic");
+                await _azureServiceBus.PublishMessage(checkoutHeader, "checkoutqueue");
+                await _cartRepository.ClearCart(checkoutHeader.UserId);
                 
             }
             catch (Exception ex)

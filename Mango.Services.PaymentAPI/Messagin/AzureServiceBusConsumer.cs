@@ -67,6 +67,7 @@ namespace Mango.Services.PaymentAPI.Messagin
             {
                 Status = result,
                 OrderId = paymentRequestMessage.OrderId,
+                Email = paymentRequestMessage.Email
             };
 
             try
@@ -76,6 +77,7 @@ namespace Mango.Services.PaymentAPI.Messagin
             }
             catch (Exception ex)
             {
+                //await args.
                 throw;
             }
         }

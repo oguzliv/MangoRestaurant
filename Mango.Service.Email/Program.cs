@@ -1,11 +1,9 @@
-using AutoMapper;
-using Mango.MessageBus;
-using Mango.Services.OrderAPI.DbContexts;
-using Mango.Services.OrderAPI.Extensions;
-using Mango.Services.OrderAPI.Messagin;
+using Mango.Service.Email.DbContexts;
+using Mango.Service.Email.Extensions;
+using Mango.Service.Email.Messagin;
+using Mango.Service.Email.Repository;
 using Mango.Services.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,31 +48,17 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 optionBuilder.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddSingleton(new OrderRepository(optionBuilder.Options));
-builder.Services.AddSingleton<IAzureServiceBusConsumer,AzureServiceBusConsumer>();
-builder.Services.AddSingleton<IMessageBus, AzureServiceBus>();
+builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+builder.Services.AddSingleton(new EmailRepository(optionBuilder.Options));
+builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
 
-builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
-{
-    options.Authority = "https://localhost:44363";
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateAudience = false
-    };
-});
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("ApiScope", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "mango");
-    });
-});
-
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -86,9 +70,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.UseAzureServiceBusConsumer();
+
 app.Run();
