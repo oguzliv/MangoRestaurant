@@ -34,6 +34,9 @@ namespace Mango.Services.ShoppingCartAPI.Repository
                 _db.CartDetails
                     .RemoveRange(_db.CartDetails.Where(u => u.CartHeaderId == cartHeaderFromDb.CartHeaderId));
                 _db.CartHeaders.Remove(cartHeaderFromDb);
+                _db.SaveChanges();
+                //var x = _db.CartHeaders.FirstOrDefaultAsync();
+                //var y = _db.CartHeaders.FirstOrDefaultAsync();
                 return true;
             }
             else

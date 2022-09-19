@@ -114,7 +114,7 @@ namespace Mango.Web.Controllers
             {
                 if (!String.IsNullOrEmpty(cartDto.CartHeader.CouponCode))
                 {
-                    var couponCode = await _couponService.GetCoupon<ResponseDto>(cartDto.CartHeader.CouponCode);
+                    var couponCode = await _couponService.GetCoupon<ResponseDto>(cartDto.CartHeader.CouponCode,accessToken);
                     if (couponCode != null && couponCode.IsSuccess)
                     {
                         var couponDto = JsonConvert.DeserializeObject<CouponDto>(Convert.ToString(couponCode.Result));
