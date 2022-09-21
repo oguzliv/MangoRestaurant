@@ -2,6 +2,7 @@ using Mango.Service.Email.DbContexts;
 using Mango.Service.Email.Extensions;
 using Mango.Service.Email.Messagin;
 using Mango.Service.Email.Repository;
+using Mango.Services.EmailAPI.Messagin;
 using Mango.Services.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -55,6 +56,8 @@ optionBuilder.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnec
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 builder.Services.AddSingleton(new EmailRepository(optionBuilder.Options));
 builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
+//builder.Services.AddSingleton<IRabbitMQEmailMessageSender, RabbitMQEmailMessageSender>();
+builder.Services.AddHostedService<RabbitMQEmailConsumer>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

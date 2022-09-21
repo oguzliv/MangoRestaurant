@@ -3,6 +3,7 @@ using Mango.MessageBus;
 using Mango.Services.OrderAPI.DbContexts;
 using Mango.Services.OrderAPI.Extensions;
 using Mango.Services.OrderAPI.Messagin;
+using Mango.Services.OrderAPI.RabbitMQSender;
 using Mango.Services.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -57,6 +58,9 @@ optionBuilder.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnec
 builder.Services.AddSingleton(new OrderRepository(optionBuilder.Options));
 builder.Services.AddSingleton<IAzureServiceBusConsumer,AzureServiceBusConsumer>();
 builder.Services.AddSingleton<IMessageBus, AzureServiceBus>();
+builder.Services.AddSingleton<IRabbitMQOrderMessageSender, RabbitMQOrderMessageSender>();
+builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
+builder.Services.AddHostedService<RabbitMQOrderPaymentConsumer>();
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
 {
